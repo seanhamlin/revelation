@@ -1,0 +1,44 @@
+Change Log
+==========
+
+<TODO>
+
+<feature>	: user selectable password with a password strength indicator
+<feature>	: default password is hard to guess
+<feature>	: add salt to password
+<feature>	: password hash is encoded first into the stego image (better stego image detection that in Revelation 1.0)
+<feature>	: added support for Gzip compression
+<feature>	: added support for AES encryption
+<fix>		: redesign of the gui (match the website logo)
+<fix>		: menu bar on all screens
+<fix>		: web 2.0 logo
+<fix>		: progress bar reaches the end always now when finished reading/writing etc.
+<feature>	: Revelation remembers the directory last opened (saved in a text file revelation.ini
+<fix>		: icon transparency on buttons
+<feature>	: setSeed(final int[] array) more secure seed, instead of String.hashcode
+<fix>		: //Schedule a job for event dispatch thread:
+		        //creating and showing this application's GUI.
+		        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		            public void run() {
+		                createAndShowGUI();
+		            }
+		        });
+<fix>		: Externalise all gui panels that have repetition		 
+<feature>	: make last changed info same as the original bmp
+<fix>		: Cleaned up Javadoc       
+
+Revelation 2.0
+==============
+
+<feature> 	: added pseudo random encoding of the data within the stego image. This spreads the data (seemingly) randomly over the stego image to achieve a more natural image. Also makes cryptanalysis harder, as the order is now obfuscated
+<fix>		: fixed the encoding of the bottom line of pixels, in Revelation 1.0, these were wrapped 1 pixel left
+<fix>		: changed the HTML in the popup help files to be HTML 3.2 compliant (JEditorPane supports up to HTML 3.2 only)
+
+
+Revelation 1.0
+==============
+
+<feature>	: adaptive embedding, Revelation will automatically choose the minimum number of LSB's to modify on the source image in order to fully hide the data (from 1 -> 4 LSB's)
+<feature>	: minimum error replacement
+<feature>	: unique wizard style interface
+<feature>	: help with every step

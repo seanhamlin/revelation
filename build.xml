@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!-- ===================================================================
+
+Build file for the Revelation Application
+
+Notes:
+   This is a build file for use with the Jakarta Ant build tool.
+
+Prerequisites:
+   jakarta-ant from http://jakarta.apache.org
+
+Build Instructions:
+   To build, run
+
+     java org.apache.tools.ant.Main <target>
+
+   on the directory where this file is located with the target you want.
+
+Most useful targets:
+ - compile  -> creates the classes in "./build/classes"
+ - javadocs -> creates the javadocs in "./build/doc/api"
+ - tests    -> runs the junit tests
+ - jar     -> creates the jars in "./build/lib"
+
+Author Sean Hamlin
+
+==================================================================== -->
+
+<project default="all" basedir=".">
+   <property name="name" value="Revelation"/>
+   <property name="vendor" value="Sean Hamlin"/>
+   <property name="version" value="2.0"/>
+   <property name="version_suffix" value="2_0"/>
+   <property name="debug" value="on"/>
+   <property name="src.dir" value="src"/>
+   <property name="classes.dir" value="bin"/>
+   <property name="docs.dir" value="docs"/>
+   <property name="lib.dir" value="lib"/>
+   <property name="config.dir" value="config"/>
+   <property name="build.dir" value="build"/>
+   <property name="build.classes" value="${build.dir}/classes"/>
+   <property name="build.lib" value="${build.dir}/lib"/>
+   <property name="build.jar" value="${build.lib}/${name}-${version}.jar"/>
+   <property name="build.test.jar" value="${build.lib}/${name}-tests-${version}.jar"/>
+   <property name="build.tests.jar" value="${build.lib}/${name}-testsuite-${version}.jar"/>
+   <property name="build.docs" value="${build.dir}/docs"/>
+   <property name="build.docs.api" value="${build.docs}/api"/>
+   <property name="build.tmp" value="${build.dir}/tmp"/>
+   <property name="main.class.swing" value="gui.Main"/>
+
+   <!-- =================================================================== -->
+   <!-- Set up build class path  - consists of all libraries in the lib folder                                                   -->
+   <!-- =================================================================== -->
+   <path id="build.classpath">
+      <fileset dir="${lib.dir}">
+         <include name="**/*.jar"/>
+      </fileset>
+   </path>
+    <!-- =================================================================== -->
+   <!-- Main target: compile, jar,test and build java docs                                                                           -->
+   <!-- =================================================================== -->
+   <target name="all" description="Main target - compile, jar  docs and test " depends="cleanup,jar,javadocs">
+      <available property="jdk1.2+" classname="java.lang.ThreadLocal"/>
+      <available property="jdk1.3+" classname="java.lang.StrictMath"/>
+      <available property="junit.present" classname="junit.framework.TestCase"/>
+      <echo>Build finished !</echo>
+   </target>
+   <!-- =================================================================== -->
+   <!-- Check to see what optional dependencies are available - can be used in conditionals               -->
+   <!-- =================================================================== -->
+   <target name="check_for_optional_packages">
+      <available property="jdk1.2+" classname="java.lang.ThreadLocal"/>
+      <available property="jdk1.3+" classname="java.lang.StrictMath"/>
+      <available property="junit.present" classname="junit.framework.TestCase"/>
+   </target>
+   <!-- =================================================================== -->
+   <!-- Prepares the build directory                                                                                                           -->
+   <!-- =================================================================== -->
+   <target name="prepare" depends="check_for_optional_packages">
+      <mkdir dir="${build.dir}"/>
+      <mkdir dir="${build.classes}"/>
+      <mkdir dir="${build.lib}"/>
+   </target>
+   <!-- =================================================================== -->
+   <!-- Compiles the source directory                                                                                                       -->
+   <!-- =================================================================== -->
+   <target name="compile" depends="prepare" description="Compile the whole project">
+      <javac destdir="${build.classes}" 
+             debug="${debug}" 
+             deprecation="on"
+             optimize="off"
+             srcdir="${src.dir}"
+             classpathref="build.classpath"
+             includes="**/*.*"
+      />
+      <copy todir="${build.classes}">
+         <fileset dir="${src.dir}" includes="**/*.properties"/>
+      </copy>
+   </target>
+   <!-- =================================================================== -->
+   <!-- Jar the classes                                                                                                                               -->
+   <!-- =================================================================== -->
+   <target name="jar" depends="compile" description="Creates the jar file">
+      <!-- here we set certain meta information in the jar file dynamically by replacing values in a template -->
+      <filter token="NAME" value="${name}"/>
+      <filter token="TITLE" value="${name}"/>
+      <filter token="VERSION" value="${version}"/>
+      <filter token="VENDOR" value="${vendor}"/>
+      <filter token="MAIN_CLASS" value="${main.class.swing}"/>
+      <copy file="${config.dir}/${name}.mf" tofile="${build.tmp}/manifest.mf" filtering="yes"/>
+      <copy todir="${build.classes}/data/images">
+         <fileset dir="${src.dir}/data/images/" includes="**/*.*" excludes="**/*.db"/>
+      </copy>
+     <copy todir="${build.classes}/data/help">
+        <fileset dir="${src.dir}/data/help/" includes="**/*.*" excludes="**/*.db"/>
+     </copy>
+      <!-- separate jar files for runtime and tests -->
+      <jar jarfile="${build.jar}" 
+           manifest="${build.tmp}/manifest.mf" 
+           basedir="${build.classes}"
+           includes="*/**/*.*"
+      />
+   	
+   	<!--<jar destfile="${build.jar}" includes="*.jpg,*.GIF,*.gif" basedir="src/data/images/" update="true"/>-->
+   	<!--<jar destfile="${build.jar}" includes="*.chm" basedir="help/" update="true"/>-->
+   </target>
+ 
+   <!-- =================================================================== -->
+   <!-- Creates the API documentation                                       -->
+   <!-- =================================================================== -->
+   <target name="javadocs" depends="prepare" description="Creates the API documentation">
+      <delete dir="${build.docs.api}"/>
+      <mkdir dir="${build.docs.api}"/>
+      <javadoc packagenames="*.*"
+               sourcepath="${src.dir}"
+               destdir="${build.docs.api}"        	       
+      		   public="true"
+               author="true"
+               version="true"
+               use="false"
+               windowtitle="${name} ${version} "
+        >	
+       </javadoc>
+   </target>
+   <!-- =================================================================== -->
+   <!-- Clean up. In particular, remove the build directory                                                                                                           -->
+   <!-- =================================================================== -->
+   <target name="cleanup">
+      <delete dir="${build.dir}"/>
+   </target>
+
+</project>
